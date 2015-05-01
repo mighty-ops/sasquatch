@@ -22,9 +22,9 @@ class SlackInterfaceRequestHandler
               when 'restart' then process.exit 1
               when 'mute' then @volume.set 0
               when 'unmute' then @volume.set 5
-              when 'scrubs' then @spotify.play('spotify:track:1KGi9sZVMeszgZOWivFpxs')
-              when 'spaceman' then @spotify.play('spotify:track:2Elq6GxVh8v9QFCF3ca2Xc')
-              when 'uptown funk' then @spotify.play('spotify:track:32OlwWuMpZ6b0aN2RZOeMS')
+              when 'scrubs' then @spotify.play 'spotify:track:1KGi9sZVMeszgZOWivFpxs'
+              when 'spaceman' then @spotify.play 'spotify:track:2Elq6GxVh8v9QFCF3ca2Xc'
+              when 'uptown funk' then @spotify.play 'spotify:track:32OlwWuMpZ6b0aN2RZOeMS'
 
               when 'play'
                 if @auth.args[0]?
