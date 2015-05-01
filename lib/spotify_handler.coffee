@@ -153,11 +153,6 @@ class SpotifyHandler
         @_play_callback new_track
     return
 
-  scrubs: ->
-    new_track = @spotify.createFromLink('spotify:track:1KGi9sZVMeszgZOWivFpxs')
-    @_play_callback new_track
-    return
-
   # Handles the actual playback once the track object has been loaded from Spotify
   _play_callback: (track) ->
     @state.track.object = track
