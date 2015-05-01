@@ -82,7 +82,6 @@ class SpotifyHandler
       tracksRemoved: @update_playlist.bind(this)
     return
 
-
   # Pauses playback at the current time. Can be resumed by calling @play().
   pause: ->
     @paused = true
@@ -154,6 +153,10 @@ class SpotifyHandler
         @_play_callback new_track
     return
 
+  scrubs: ->
+    new_track = @spotify.createFromLink('spotify:track:1KGi9sZVMeszgZOWivFpxs')
+    @_play_callback new_track
+    return
 
   # Handles the actual playback once the track object has been loaded from Spotify
   _play_callback: (track) ->

@@ -22,6 +22,7 @@ class SlackInterfaceRequestHandler
               when 'restart' then process.exit 1
               when 'mute' then @volume.set 0
               when 'unmute' then @volume.set 5
+              when 'scrubs' then @spotify.scrubs()
 
               when 'play'
                 if @auth.args[0]?
