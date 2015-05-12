@@ -27,6 +27,9 @@ class SpotifyHandler
 
     @playlists = @storage.getItem('playlists') || {}
 
+    #Tracks songs already shuffled through
+    @shuffletracker = @storage.getItem('shuffletracker') || []
+
     @spotify.on
       ready: @spotify_connected.bind(@)
       logout: @spotify_disconnected.bind(@)
@@ -56,8 +59,8 @@ class SpotifyHandler
     else if last_playlist = @storage.getItem 'last_playlist'
       @set_playlist last_playlist
     # If that didn't work, try one named "default"
-    else if @playlists.default?
-      @set_playlist 'default'
+    else if @playlists.sasquatch?
+      @set_playlist 'sasquatch'
     return
 
 
@@ -108,6 +111,9 @@ class SpotifyHandler
   # Toggles shuffle on and off. MAGIC!
   toggle_shuffle: ->
     @shuffle = !@shuffle
+
+    #Also resets shuffle tracker
+    @shuffletracker = []
 
 
   is_playing: ->
@@ -169,7 +175,18 @@ class SpotifyHandler
   # Gets the next track from the playlist.
   get_next_track: ->
     if @shuffle
-      @state.track.index = Math.floor(Math.random() * @state.playlist.object.numTracks)
+      @state.track.index = 0
+
+      #Checks to see if whole playlist has been played, and if so, resets
+      if @shuffletracker.length === @state.playlist.object.numTracks
+        @shuffletracker = []
+      #Checks if track index has played already
+      while @state.track.index in @shuffletracker
+        @state.track.index = Math.floor(Math.random() * @state.playlist.object.numTracks)
+
+      #Pushes new track to shuffletracker array
+      @shuffletracker.push @state.track.index
+      @storage.setItem 'shuffletracker', @shuffletracker
     else
       @state.track.index = ++@state.track.index % @state.playlist.object.numTracks
     @state.playlist.object.getTrack(@state.track.index)
@@ -225,9 +242,20 @@ class SpotifyHandler
     return true
 
 
-  # Removes Everything that shouldn't be in a link, especially Slack's <> encasing
+  # Removes everything that shouldn't be in a link, especially Slack's <> encasing
+  # URI syntax: spotify:track:1rg9i5UE2qefjows4qWlOl
+  # Link syntax: https://open.spotify.com/track/1rg9i5UE2qefjows4qWlOl
+
+  # Playlist URI: spotify:user:andrewandante:playlist:55JRht2BU746jN5m02pL6B
+  # Playlist Link: https://open.spotify.com/user/andrewandante/playlist/55JRht2BU746jN5m02pL6B
+
   _sanitize_link: (link) ->
+    link.replace /[/]/g, ':'
     link.replace /[^0-9a-zA-Z:#]/g, ''
+    if link.substring(0, 5) === "https"
+      link.replace('https', 'http')
+    if link.substring(0, 4) === "http"
+      link.replace('http:::openspotifycom', 'spotify')
 
 
 # export things
