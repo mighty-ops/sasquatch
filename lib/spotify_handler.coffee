@@ -178,7 +178,7 @@ class SpotifyHandler
       @state.track.index = 0
 
       #Checks to see if whole playlist has been played, and if so, resets
-      if @shuffletracker.length === @state.playlist.object.numTracks
+      if @shuffletracker.length == @state.playlist.object.numTracks
         @shuffletracker = []
       #Checks if track index has played already
       while @state.track.index in @shuffletracker
@@ -252,9 +252,9 @@ class SpotifyHandler
   _sanitize_link: (link) ->
     link.replace /[/]/g, ':'
     link.replace /[^0-9a-zA-Z:#]/g, ''
-    if link.substring(0, 5) === "https"
+    if link.substring(0, 5) == "https"
       link.replace('https', 'http')
-    if link.substring(0, 4) === "http"
+    if link.substring(0, 4) == "http"
       link.replace('http:::openspotifycom', 'spotify')
 
 
