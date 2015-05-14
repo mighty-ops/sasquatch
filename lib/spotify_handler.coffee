@@ -175,8 +175,6 @@ class SpotifyHandler
   # Gets the next track from the playlist.
   get_next_track: ->
     if @shuffle
-      @state.track.index = 0
-
       #Checks to see if whole playlist has been played, and if so, resets
       if @shuffletracker.length == @state.playlist.object.numTracks
         @shuffletracker = []
@@ -209,6 +207,7 @@ class SpotifyHandler
 
   # The actual handling of the new playlist once it has been loaded.
   _set_playlist_callback: (name, playlist) ->
+    @shuffletracker = []
     @state.playlist.name = name
 
     # Update our internal state
@@ -250,12 +249,13 @@ class SpotifyHandler
   # Playlist Link: https://open.spotify.com/user/andrewandante/playlist/55JRht2BU746jN5m02pL6B
 
   _sanitize_link: (link) ->
-    link.replace /[/]/g, ':'
-    link.replace /[^0-9a-zA-Z:#]/g, ''
+    link = link.replace(/[\/]/g, ':')
+    link = link.replace(/[^0-9a-zA-Z:#]/g, '')
     if link.substring(0, 5) == "https"
-      link.replace('https', 'http')
+      link = link.replace('https', 'http')
     if link.substring(0, 4) == "http"
-      link.replace('http:::openspotifycom', 'spotify')
+      link = link.replace('http:::openspotifycom', 'spotify')
+    return link
 
 
 # export things
