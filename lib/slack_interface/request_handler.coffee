@@ -14,7 +14,7 @@ class SlackInterfaceRequestHandler
 
             reply_data = { ok: true }
 
-            switch @auth.command
+            switch @auth.command.toLowerCase()
               when 'pause' then @spotify.pause()
               when 'skip' then @spotify.skip()
               when 'reconnect' then @spotify.connect()
@@ -27,6 +27,7 @@ class SlackInterfaceRequestHandler
               when 'stop'
                 @spotify.stop()
                 reply_data['text'] = "HAMMER TIME!"
+
               when 'play'
                 if @auth.args[0]?
                     @spotify.play @auth.args[0]
@@ -66,14 +67,14 @@ class SlackInterfaceRequestHandler
               when 'status'
                 shuffleword = if @spotify.shuffle then '' else ' not'
                 if @spotify.is_paused()
-                  reply_data['text'] = "We are *paused* on a song called *#{@spotify.state.track.name}* by *#{@spotify.state.track.artists}*.\nWe are#{shuffleword} shuffling through the playlist *#{@spotify.state.playlist.name}*. Resume playback with `play`."
+                  reply_data['text'] = "We are *paused* on a song called *#{@spotify.state.track.name}* by *#{@spotify.state.track.artists}*.\n The playlist is *#{@spotify.state.playlist.name}*, and we are#{shuffleword} shufflin'. Resume playback with `play`."
                 else if !@spotify.is_playing()
-                  reply_data['text'] = "Playback is currently *stopped*. You can start it again by choosing an available `list`."
+                  reply_data['text'] = "Playback is *stopped*. Choose a `list` or single track to `play`!"
                 else
-                  reply_data['text'] = "This banging tune is *#{@spotify.state.track.name}* by *#{@spotify.state.track.artists}*.\nWe  are#{shuffleword} shuffling through the playlist *#{@spotify.state.playlist.name}*."
+                  reply_data['text'] = "This banging tune is *#{@spotify.state.track.name}* by *#{@spotify.state.track.artists}*.\nThe playlist is *#{@spotify.state.playlist.name}*, and we are#{shuffleword} shufflin'."
 
               when 'help'
-                reply_data['text'] = "You seem lost. Here's a list of commands that are available to you:   \n   \n*Commands*\n> `play [Spotify URI]` - Starts/resumes playback if no URI is provided. If a URI is given, immediately switches to the linked track.\n> `pause` - Pauses playback at the current time.\n> `stop` - Stops playback and resets to the beginning of the current track.\n> `skip` - Skips (or shuffles) to the next track in the playlist.\n> `shuffle` - Toggles shuffle on or off.\n> `vol [up|down|0..10]` Turns the volume either up/down one notch or directly to a step between `0` (mute) and `10` (full blast). Also goes to `11`.\n> `mute` - Same as `vol 0`.\n> `unmute` - Same as `vol 5`.\n> `status` - Shows the currently playing song, playlist and whether you're shuffling or not.\n> `help` - Shows a list of commands with a short explanation.\n   \n*Playlists*\n> `list add <name> <Spotify URI>` - Adds a list that can later be accessed under <name>.\n> `list remove <name>` - Removes the specified list.\n> `list rename <old name> <new name>` - Renames the specified list.\n> `list <name>` - Selects the specified list and starts playback."
+                reply_data['text'] = "You seem lost. Here's a list of commands that are available to you:   \n   \n*Commands*\n> `play [Spotify URI/URL]` - Starts/resumes playback if no URI/URL is provided. If a URI/URL is given, immediately switches to the linked track.\n> `pause` - Pauses playback at the current time.\n> `stop` - Stops playback and resets to the beginning of the current track.\n> `skip` - Skips (or shuffles) to the next track in the playlist.\n> `shuffle` - Toggles shuffle on or off.\n> `vol [up|down|0..10]` Turns the volume either up/down one notch or directly to a step between `0` (mute) and `10` (full blast). Also goes to `11`.\n> `mute` - Same as `vol 0`.\n> `unmute` - Same as `vol 5`.\n> `status` - Shows the currently playing song, playlist and whether you're shuffling or not.\n> `help` - Shows a list of commands with a short explanation.\n   \n*Playlists*\n> `list add <name> <Spotify URI>` - Adds a list that can later be accessed under <name>.\n> `list remove <name>` - Removes the specified list.\n> `list rename <old name> <new name>` - Renames the specified list.\n> `list <name>` - Selects the specified list and starts playback."
 
               else
                 # Fallback to external plugins.

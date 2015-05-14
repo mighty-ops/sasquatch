@@ -36,7 +36,7 @@ class SpotifyHandler
     @spotify.player.on
       endOfTrack: @skip.bind(@)
 
-    # And off we got
+    # And off we go
     @connect()
 
 
@@ -58,7 +58,7 @@ class SpotifyHandler
     # If we started fresh, get the one that we used last time
     else if last_playlist = @storage.getItem 'last_playlist'
       @set_playlist last_playlist
-    # If that didn't work, try one named "default"
+    # If that didn't work, try a default
     else if @playlists.sasquatch?
       @set_playlist 'sasquatch'
     return
@@ -176,7 +176,7 @@ class SpotifyHandler
   get_next_track: ->
     if @shuffle
       #Checks to see if whole playlist has been played, and if so, resets
-      if @shuffletracker.length == @state.playlist.object.numTracks
+      if @shuffletracker.length >= @state.playlist.object.numTracks
         @shuffletracker = []
       #Checks if track index has played already
       while @state.track.index in @shuffletracker
@@ -242,12 +242,6 @@ class SpotifyHandler
 
 
   # Removes everything that shouldn't be in a link, especially Slack's <> encasing
-  # URI syntax: spotify:track:1rg9i5UE2qefjows4qWlOl
-  # Link syntax: https://open.spotify.com/track/1rg9i5UE2qefjows4qWlOl
-
-  # Playlist URI: spotify:user:andrewandante:playlist:55JRht2BU746jN5m02pL6B
-  # Playlist Link: https://open.spotify.com/user/andrewandante/playlist/55JRht2BU746jN5m02pL6B
-
   _sanitize_link: (link) ->
     link = link.replace(/[\/]/g, ':')
     link = link.replace(/[^0-9a-zA-Z:#]/g, '')
