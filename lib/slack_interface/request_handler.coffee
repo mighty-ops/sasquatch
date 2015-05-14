@@ -16,7 +16,6 @@ class SlackInterfaceRequestHandler
 
             switch @auth.command
               when 'pause' then @spotify.pause()
-              when 'stop' then @spotify.stop()
               when 'skip' then @spotify.skip()
               when 'reconnect' then @spotify.connect()
               when 'restart' then process.exit 1
@@ -25,7 +24,9 @@ class SlackInterfaceRequestHandler
               when 'scrubs' then @spotify.play 'spotify:track:1KGi9sZVMeszgZOWivFpxs'
               when 'spaceman' then @spotify.play 'spotify:track:2Elq6GxVh8v9QFCF3ca2Xc'
               when 'uptownfunk' then @spotify.play 'spotify:track:32OlwWuMpZ6b0aN2RZOeMS'
-
+              when 'stop'
+                @spotify.stop()
+                reply_data['text'] = "HAMMER TIME!"
               when 'play'
                 if @auth.args[0]?
                     @spotify.play @auth.args[0]
