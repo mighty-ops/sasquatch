@@ -107,6 +107,10 @@ class SpotifyHandler
     @play @get_next_track()
     return
 
+  # Goes back a track
+  back: ->
+    @play @get_last_track()
+    return
 
   # Toggles shuffle on and off. MAGIC!
   toggle_shuffle: ->
@@ -175,20 +179,34 @@ class SpotifyHandler
   # Gets the next track from the playlist.
   get_next_track: ->
     if @shuffle
+
+      #Pushes track to shuffletracker array
+      @shuffletracker.push @state.track.index
+      @storage.setItem 'shuffletracker', @shuffletracker
+
       #Checks to see if whole playlist has been played, and if so, resets
       if @shuffletracker.length >= @state.playlist.object.numTracks
-        @shuffletracker = []
+        @shuffletracker = [@state.track.index]
+
       #Checks if track index has played already
       while @state.track.index in @shuffletracker
         @state.track.index = Math.floor(Math.random() * @state.playlist.object.numTracks)
 
-      #Pushes new track to shuffletracker array
-      @shuffletracker.push @state.track.index
-      @storage.setItem 'shuffletracker', @shuffletracker
     else
       @state.track.index = ++@state.track.index % @state.playlist.object.numTracks
     @state.playlist.object.getTrack(@state.track.index)
 
+  # Gets the previous track from the playlist.
+  get_last_track: ->
+    if @shuffle
+
+      #Pops last track off the shuffletracker array
+      @state.track.index = @shuffletracker.pop()
+      @storage.setItem 'shuffletracker', @shuffletracker
+
+    else
+      @state.track.index = --@state.track.index % @state.playlist.object.numTracks
+    @state.playlist.object.getTrack(@state.track.index)
 
   # Changes the current playlist and starts playing.
   # Since the playlist might have loaded before we can attach our callback, the actual playlist-functionality
@@ -248,7 +266,7 @@ class SpotifyHandler
     if link.substring(0, 5) == "https"
       link = link.replace('https', 'http')
     if link.substring(0, 4) == "http"
-      link = link.replace('http:::openspotifycom', 'spotify')
+      link = link.replace(link.slice(0, 21), 'spotify')
     return link
 
 
