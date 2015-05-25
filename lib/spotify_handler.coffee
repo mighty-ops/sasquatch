@@ -30,6 +30,8 @@ class SpotifyHandler
     #Tracks songs already shuffled through
     @shuffletracker = @storage.getItem('shuffletracker') || []
 
+    @queue = []
+
     @spotify.on
       ready: @spotify_connected.bind(@)
       logout: @spotify_disconnected.bind(@)
@@ -178,8 +180,11 @@ class SpotifyHandler
 
   # Gets the next track from the playlist.
   get_next_track: ->
-    if @shuffle
+    if @queue.length > 0
+       # Items to play!
+       return @queue.shift()
 
+    if @shuffle
       #Pushes track to shuffletracker array
       @shuffletracker.push @state.track.index
       @storage.setItem 'shuffletracker', @shuffletracker
@@ -224,6 +229,7 @@ class SpotifyHandler
 
 
   # The actual handling of the new playlist once it has been loaded.
+
   _set_playlist_callback: (name, playlist) ->
     @shuffletracker = []
     @state.playlist.name = name
@@ -258,6 +264,10 @@ class SpotifyHandler
     @storage.setItem 'playlists', @playlists
     return true
 
+  addtoqueue: (track) ->
+    strack = @spotify.createFromLink @_sanitize_link(track)
+    if (strack)
+      @queue.push strack
 
   # Removes everything that shouldn't be in a link, especially Slack's <> encasing
   _sanitize_link: (link) ->
