@@ -173,8 +173,9 @@ class SpotifyHandler
       artist.name
     ).join ", "
 
-    @spotify.player.play @state.track.object
-    @playing = true
+    try @spotify.player.play @state.track.object
+    catch err then @play @get_next_track()
+    finally @playing = true
     return
 
 
