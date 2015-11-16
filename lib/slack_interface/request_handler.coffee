@@ -26,6 +26,8 @@ class SlackInterfaceRequestHandler
               when 'scrubs' then @spotify.play 'spotify:track:1KGi9sZVMeszgZOWivFpxs'
               when 'spaceman' then @spotify.play 'spotify:track:2Elq6GxVh8v9QFCF3ca2Xc'
               when 'uptownfunk' then @spotify.play 'spotify:track:32OlwWuMpZ6b0aN2RZOeMS'
+              when 'hustle' then @spotify.play 'spotify:track:0rBMP6VVGRgwnzZCLpijyl'
+              when 'attak' then @spotify.play 'spotify:track:6XNmtLiveX987arpfhYGrj'
 
               when 'critical'
                 @exec('~/critical-script', (error, stdout, stderr) -> )
