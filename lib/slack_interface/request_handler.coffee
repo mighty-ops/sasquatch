@@ -37,7 +37,7 @@ class SlackInterfaceRequestHandler
     
               when 'emptyqueue' 
                 @spotify.emptyQueue()
-                reply_data['text'] = "Queue has been emptied D:"
+                reply_data['text'] = "The queue has been emptied :anguished:"
 
               when 'queue'
                 if @auth.args[0]?
