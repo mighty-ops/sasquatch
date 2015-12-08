@@ -103,6 +103,10 @@ class SpotifyHandler
     @spotify.player.stop()
     return
 
+  # Remove all items from the current queue
+  emptyQueue: ->
+    @queue = []
+    return
 
   # Plays the next track in the playlist
   skip: ->

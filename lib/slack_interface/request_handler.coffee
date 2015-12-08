@@ -34,6 +34,10 @@ class SlackInterfaceRequestHandler
 
               when 'recover'
                 @exec('~/recover-script', (error, stdout, stderr) -> )
+    
+              when 'emptyqueue' 
+                @spotify.emptyQueue()
+                reply_data['text'] = "Queue has been emptied D:"
 
               when 'queue'
                 if @auth.args[0]?
