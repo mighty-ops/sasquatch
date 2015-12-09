@@ -46,7 +46,12 @@ class SlackInterfaceRequestHandler
                   else
                     reply_data['text'] = "Invalid track. Jesus. What are you even doing. Give up BAKA ONIICHAN."
                 else
-                  reply_data['text'] = "You have to queue a track you scrub."
+                  queueList = @spotify.getQueue()
+                  if queueList.length
+                    reply_data['text'] = "In the queue we have... \n• " + queueList.join('\n• ')
+                  else
+                    reply_data['text'] = "There are currently no items in the queue."
+                    
 
               when 'stop'
                 @spotify.stop()
@@ -97,7 +102,26 @@ class SlackInterfaceRequestHandler
                   reply_data['text'] = "This banging tune is *<#{@spotify.state.track.object.link}|#{@spotify.state.track.name}>* by *#{@spotify.state.track.artists}*.\nThe playlist is *<#{@spotify.playlists[@spotify.state.playlist.name]}|#{@spotify.state.playlist.name}>*, and we are#{shuffleword} shufflin'."
 
               when 'help'
-                reply_data['text'] = "Noob. Here's how to work it:   \n   \n*Commands*\n> `play [Spotify URI/URL]` - Starts/resumes playback if no URI/URL is provided. If a URI/URL is given, immediately switches to the linked track.\n> `pause` - Pauses playback at the current time.\n> `queue [Spotify URI/URL]` - Add a new track to the queue. Will play before continuing playlist. FIFO Queue.\n> `stop` - Stops playback and resets to the beginning of the current track.\n> `skip` - Skips (or shuffles) to the next track in the playlist.\n> `back` - Returns to the previous track in the playlist.\n> `shuffle` - Toggles shuffle on or off and resets the tracker.\n> `vol [up|down|0..10]` Turns the volume either up/down one notch or directly to a step between `0` (mute) and `10` (full blast). Also goes to `11`.\n> `mute` - Same as `vol 0`.\n> `unmute` - Same as `vol 5`.\n> `status` - Shows the currently playing song, playlist and whether you're shuffling or not.\n> `help` - Shows a list of commands with a short explanation.\n   \n*Playlists*\n> `list add <name> <Spotify URI>` - Adds a list that can later be accessed under <name>.\n> `list remove <name>` - Removes the specified list.\n> `list rename <old name> <new name>` - Renames the specified list.\n> `list <name>` - Selects the specified list and starts playback."
+                reply_data['text'] = "Noob. Here's how to work it:
+                \n\n*Commands*
+                \n> `play [Spotify URI/URL]` - Starts/resumes playback if no URI/URL is provided. If a URI/URL is given, immediately switches to the linked track.
+                \n> `pause` - Pauses playback at the current time.
+                \n> `queue [Spotify URI/URL]` - Add a new track to the queue. Will play before continuing playlist. FIFO Queue.
+                \n> `queue` - View the items in the queue
+                \n> `stop` - Stops playback and resets to the beginning of the current track.
+                \n> `skip` - Skips (or shuffles) to the next track in the playlist.
+                \n> `back` - Returns to the previous track in the playlist.
+                \n> `shuffle` - Toggles shuffle on or off and resets the tracker.
+                \n> `vol [up|down|0..10]` Turns the volume either up/down one notch or directly to a step between `0` (mute) and `10` (full blast). Also goes to `11`.
+                \n> `mute` - Same as `vol 0`.
+                \n> `unmute` - Same as `vol 5`.
+                \n> `status` - Shows the currently playing song, playlist and whether you're shuffling or not.
+                \n> `help` - Shows a list of commands with a short explanation.
+                    \n*Playlists*
+                \n> `list add <name> <Spotify URI>` - Adds a list that can later be accessed under <name>.
+                \n> `list remove <name>` - Removes the specified list.
+                \n> `list rename <old name> <new name>` - Renames the specified list.
+                \n> `list <name>` - Selects the specified list and starts playback."
 
               else
                 # Fallback to external plugins.

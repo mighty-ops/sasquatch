@@ -103,6 +103,22 @@ class SpotifyHandler
     @spotify.player.stop()
     return
 
+  # Returns an array of tracks from the queue in the form of '*trackname* by *trackartists*'
+  getQueue: ->
+    queueList = []
+    i = 0
+    while i < @queue.length
+      trackArtists = []
+      j = 0
+      while j < @queue[i].artists.length
+        trackArtists.push @queue[i].artists[j].name
+        j++
+      trackArtists = trackArtists.join(', ');
+      trackDetails = '*<' + @queue[i].uri + '|' + @queue[i].name + '>* by *' + trackArtists + '*'
+      queueList.push trackDetails
+      i++
+    return queueList
+  
   # Remove all items from the current queue
   emptyQueue: ->
     @queue = []
