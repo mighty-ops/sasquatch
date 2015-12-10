@@ -109,12 +109,13 @@ class SpotifyHandler
     i = 0
     while i < @queue.length
       trackArtists = []
+      track = @queue[i]
       j = 0
       while j < @queue[i].artists.length
-        trackArtists.push @queue[i].artists[j].name
+        trackArtists.push track.artists[j].name
         j++
       trackArtists = trackArtists.join(', ');
-      trackDetails = '*<' + @queue[i].uri + '|' + @queue[i].name + '>* by *' + trackArtists + '*'
+      trackDetails = "*<#{track.link}|#{track.name}>* by *#{trackArtists}*"
       queueList.push trackDetails
       i++
     return queueList
