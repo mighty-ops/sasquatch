@@ -15,6 +15,9 @@ class SlackInterfaceRequestHandler
 
             reply_data = { ok: true }
 
+            # We can store the user who issued the command
+            @queuer = request.body['user_name']
+
             switch @auth.command.toLowerCase()
               when 'pause' then @spotify.pause()
               when 'skip' then @spotify.skip()
@@ -34,15 +37,15 @@ class SlackInterfaceRequestHandler
 
               when 'recover'
                 @exec('~/recover-script', (error, stdout, stderr) -> )
-    
-              when 'emptyqueue' 
+
+              when 'emptyqueue'
                 @spotify.emptyQueue()
                 reply_data['text'] = "The queue has been emptied :anguished:"
 
               when 'queue'
                 if @auth.args[0]?
-                  if @spotify.addtoqueue @auth.args[0]
-                    reply_data['text'] = "Queued ^.^"
+                  if @spotify.addtoqueue @auth.args[0], @queuer
+                  	reply_data['text'] = "Queued ^.^"
                   else
                     reply_data['text'] = "Invalid track. Jesus. What are you even doing. Give up BAKA ONIICHAN."
                 else
@@ -51,11 +54,11 @@ class SlackInterfaceRequestHandler
                     reply_data['text'] = "In the queue we have... \n• " + queueList.join('\n• ')
                   else
                     reply_data['text'] = "There are currently no items in the queue."
-                    
+
 
               when 'stop'
                 @spotify.stop()
-                reply_data['text'] = "HAMMER TIME!"
+                reply_data['text'] = ['HAMMER TIME!', 'Collaborate and LISTEN!', 'Right now, thank you very much, I need somebody with the human touch!', 'In the NAAAAAME of love!', 'Me if you\'ve heard this one before'][Math.floor(Math.random() * 5)]
 
               when 'play'
                 if @auth.args[0]?
@@ -92,14 +95,17 @@ class SlackInterfaceRequestHandler
                     str += "\n*#{key}* (#{@spotify.playlists[key]})"
                   reply_data['text'] = str
 
-              when 'status'
+              when 'status', 'stat'
                 shuffleword = if @spotify.shuffle then '' else ' not'
                 if @spotify.is_paused()
                   reply_data['text'] = "We are *paused* on a song called *<#{@spotify.state.track.object}|#{@spotify.state.track.name}>* by *#{@spotify.state.track.artists}*.\n The playlist is *<#{@spotify.playlists[@spotify.state.playlist.name]}|#{@spotify.state.playlist.name}>*, and we are#{shuffleword} shufflin'. Resume playback with `play`."
                 else if !@spotify.is_playing()
                   reply_data['text'] = "Playback is *stopped*. Choose a `list` or single track to `play`!"
                 else
-                  reply_data['text'] = "This banging tune is *<#{@spotify.state.track.object.link}|#{@spotify.state.track.name}>* by *#{@spotify.state.track.artists}*.\nThe playlist is *<#{@spotify.playlists[@spotify.state.playlist.name]}|#{@spotify.state.playlist.name}>*, and we are#{shuffleword} shufflin'."
+                  if @spotify.state.track.object.queuer
+                    reply_data['text'] = "This fine selection is *<#{@spotify.state.track.object.link}|#{@spotify.state.track.name}>* by *#{@spotify.state.track.artists}* - brought to you by *#{@spotify.state.track.object.queuer}*. The playlist *<#{@spotify.playlists[@spotify.state.playlist.name]}|#{@spotify.state.playlist.name}>* will resume shortly."
+                  else
+                    reply_data['text'] = "This banging tune is *<#{@spotify.state.track.object.link}|#{@spotify.state.track.name}>* by *#{@spotify.state.track.artists}*.\nThe playlist is *<#{@spotify.playlists[@spotify.state.playlist.name]}|#{@spotify.state.playlist.name}>*, and we are#{shuffleword} shufflin'."
 
               when 'help'
                 reply_data['text'] = "Noob. Here's how to work it:
