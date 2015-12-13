@@ -115,11 +115,11 @@ class SpotifyHandler
         trackArtists.push track.artists[j].name
         j++
       trackArtists = trackArtists.join(', ');
-      trackDetails = "*<#{track.link}|#{track.name}>* by *#{trackArtists}*"
+      trackDetails = "*<#{track.link}|#{track.name}>* by *#{trackArtists}*, queued by *#{track.queuer}*."
       queueList.push trackDetails
       i++
     return queueList
-  
+
   # Remove all items from the current queue
   emptyQueue: ->
     @queue = []
@@ -286,8 +286,9 @@ class SpotifyHandler
     @storage.setItem 'playlists', @playlists
     return true
 
-  addtoqueue: (track) ->
+  addtoqueue: (track, queuer) ->
     strack = @spotify.createFromLink @_sanitize_link(track)
+    strack['queuer'] = queuer
     if (strack)
       @queue.push strack
 
