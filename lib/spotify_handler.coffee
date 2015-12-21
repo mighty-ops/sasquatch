@@ -288,8 +288,8 @@ class SpotifyHandler
 
   addtoqueue: (track, queuer) ->
     strack = @spotify.createFromLink @_sanitize_link(track)
-    strack['queuer'] = queuer
     if (strack)
+      strack['queuer'] = queuer
       @queue.push strack
 
   # Removes everything that shouldn't be in a link, especially Slack's <> encasing
