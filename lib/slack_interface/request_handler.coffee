@@ -26,11 +26,11 @@ class SlackInterfaceRequestHandler
               when 'restart' then process.exit 1
               when 'mute' then @volume.set 0
               when 'unmute' then @volume.set 5
-              when 'scrubs' then @spotify.play 'spotify:track:1KGi9sZVMeszgZOWivFpxs'
-              when 'spaceman' then @spotify.play 'spotify:track:2Elq6GxVh8v9QFCF3ca2Xc'
-              when 'uptownfunk' then @spotify.play 'spotify:track:32OlwWuMpZ6b0aN2RZOeMS'
-              when 'hustle' then @spotify.play 'spotify:track:0rBMP6VVGRgwnzZCLpijyl'
-              when 'attak' then @spotify.play 'spotify:track:6XNmtLiveX987arpfhYGrj'
+              when 'scrubs' then @spotify.play 'spotify:track:1KGi9sZVMeszgZOWivFpxs', @queuer
+              when 'spaceman' then @spotify.play 'spotify:track:2Elq6GxVh8v9QFCF3ca2Xc', @queuer
+              when 'uptownfunk' then @spotify.play 'spotify:track:32OlwWuMpZ6b0aN2RZOeMS', @queuer
+              when 'hustle' then @spotify.play 'spotify:track:0rBMP6VVGRgwnzZCLpijyl', @queuer
+              when 'attak' then @spotify.play 'spotify:track:6XNmtLiveX987arpfhYGrj', @queuer
 
               when 'critical'
                 @exec('~/critical-script', (error, stdout, stderr) -> )
@@ -62,7 +62,7 @@ class SlackInterfaceRequestHandler
 
               when 'play'
                 if @auth.args[0]?
-                    @spotify.play @auth.args[0]
+                    @spotify.play @auth.args[0], @queuer
                 else
                     @spotify.play()
 

@@ -153,7 +153,7 @@ class SpotifyHandler
 
   # Either starts the current track (or next one, if none is set) or immediately
   # plays the provided track or link.
-  play: (track_or_link=null) ->
+  play: (track_or_link=null, queuer) ->
     @paused = false
     # If a track is given, immediately switch to it
     if track_or_link?
@@ -163,6 +163,8 @@ class SpotifyHandler
           # Links from Slack are encased like this: <spotify:track:1kl0Vn0FO4bbdrTbHw4IaQ>
           # So we remove everything that is neither char, number or a colon.
           new_track = @spotify.createFromLink @_sanitize_link(track_or_link)
+          # Track the user who played this Track
+          new_track['queuer'] = queuer
           # If the track was somehow invalid, don't do anything
           return if !new_track?
         # We also use this to internally trigger playback of already-loaded tracks
