@@ -90,15 +90,17 @@ class SlackInterfaceRequestHandler
                   else
                     reply_data['text'] = "Oops, you did it again. Try `help` if you need some."
                 else
-                  str = 'Currently available playlists:'
+                  str = 'Currently available playlists:\n'
+                  playlists = []
                   for key of @spotify.playlists
-                    str += "\n*#{key}* (#{@spotify.playlists[key]})"
+                    playlists.push "<#{@spotify.playlists[key]}|#{key}>"
+                  str += playlists.join ', '
                   reply_data['text'] = str
 
               when 'status', 'stat'
                 shuffleword = if @spotify.shuffle then '' else ' not'
                 if @spotify.is_paused()
-                  reply_data['text'] = "We are *paused* on a song called *<#{@spotify.state.track.object}|#{@spotify.state.track.name}>* by *#{@spotify.state.track.artists}*.\n The playlist is *<#{@spotify.playlists[@spotify.state.playlist.name]}|#{@spotify.state.playlist.name}>*, and we are#{shuffleword} shufflin'. Resume playback with `play`."
+                  reply_data['text'] = "We are *paused* on a song called *<#{@spotify.state.track.object.link}|#{@spotify.state.track.name}>* by *#{@spotify.state.track.artists}*.\n The playlist is *<#{@spotify.playlists[@spotify.state.playlist.name]}|#{@spotify.state.playlist.name}>*, and we are#{shuffleword} shufflin'. Resume playback with `play`."
                 else if !@spotify.is_playing()
                   reply_data['text'] = "Playback is *stopped*. Choose a `list` or single track to `play`!"
                 else
