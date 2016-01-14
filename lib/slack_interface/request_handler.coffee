@@ -90,11 +90,26 @@ class SlackInterfaceRequestHandler
                   else
                     reply_data['text'] = "Oops, you did it again. Try `help` if you need some."
                 else
-                  str = 'Currently available playlists:\n'
-                  playlists = []
-                  for key of @spotify.playlists
-                    playlists.push "<#{@spotify.playlists[key]}|#{key}>"
-                  str += playlists.join ', '
+                  sortObject = (o) ->
+                    sorted = {}
+                    key = undefined
+                    a = []
+                    for key of o
+                      `key = key`
+                      if o.hasOwnProperty(key)
+                        a.push key
+                    a.sort (a, b) ->
+                      a.toLowerCase().localeCompare b.toLowerCase()
+                    key = 0
+                    while key < a.length
+                      sorted[a[key]] = o[a[key]]
+                      key++
+                    sorted
+                  orderedPlaylists = sortObject @spotify.playlists
+                  cleanPlaylists = []
+                  for key of orderedPlaylists
+                    cleanPlaylists.push "<#{@spotify.playlists[key]}|#{key}>"
+                  str = 'Currently available playlists:\n' + cleanPlaylists.join ', '
                   reply_data['text'] = str
 
               when 'status', 'stat'
