@@ -17,6 +17,8 @@ class SlackInterfaceRequestHandler
 
             # We can store the user who issued the command
             @queuer = request.body['user_name']
+            
+            muppets = ['spotify:track:3iwC7lNEnW2XefyROIiAtB', 'spotify:track:3sXJTHeaEXEgziOCyI4DYl', 'spotify:track:6eVUH8bqIo2x6sfeeUGkHU', 'spotify:track:6RKbWCytFTB6emlcnrsdpt', 'spotify:track:5Kgjzdpk6INHN7MHVW1CdM', 'spotify:track:0SMobBlnSvGStk8rDfXLgs']
 
             switch @auth.command.toLowerCase()
               when 'pause' then @spotify.pause()
@@ -31,6 +33,7 @@ class SlackInterfaceRequestHandler
               when 'uptownfunk' then @spotify.play 'spotify:track:32OlwWuMpZ6b0aN2RZOeMS', @queuer
               when 'hustle' then @spotify.play 'spotify:track:0rBMP6VVGRgwnzZCLpijyl', @queuer
               when 'attak' then @spotify.play 'spotify:track:6XNmtLiveX987arpfhYGrj', @queuer
+              when 'muppets' then @spotify.play muppets[Math.floor(Math.random()*muppets.length)], @queuer
 
               when 'critical'
                 @exec('~/critical-script', (error, stdout, stderr) -> )
