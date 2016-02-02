@@ -83,12 +83,16 @@ class SlackInterfaceRequestHandler
 
               when 'list'
                 if @auth.args[0]?
+                  random = false
                   switch @auth.args[0]
                     when 'add' then status = @spotify.add_playlist @auth.args[1], @auth.args[2]
                     when 'remove' then status = @spotify.remove_playlist @auth.args[1]
                     when 'rename' then status = @spotify.rename_playlist @auth.args[1], @auth.args[2]
+                    when 'random' then random = @spotify.list_random
                     else status = @spotify.set_playlist @auth.args[0]
-                  if status
+                  if random
+                    reply_data['text'] = 'Now playing list: ' + random
+                  else if status
                     reply_data['text'] = ['Ok.', 'Sweet.', 'Chur.', 'Done like dinner.', 'sorted.org.nz (use your mouse!)', 'Coolies.', 'No problem, brah.', 'Affirmative.', 'Gotcha.', 'Aye-aye, captain! :captain:'][Math.floor(Math.random() * 10)]
                   else
                     reply_data['text'] = "Oops, you did it again. Try `help` if you need some."
@@ -147,6 +151,7 @@ class SlackInterfaceRequestHandler
                 \n> `list add <name> <Spotify URI>` - Adds a list that can later be accessed under <name>.
                 \n> `list remove <name>` - Removes the specified list.
                 \n> `list rename <old name> <new name>` - Renames the specified list.
+                \n> `list random` - Plays a random list.
                 \n> `list <name>` - Selects the specified list and starts playback."
 
               else

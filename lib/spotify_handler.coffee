@@ -267,6 +267,14 @@ class SpotifyHandler
     @storage.setItem 'last_playlist', name
     return
 
+  list_random: ->
+    lists = []
+    for key of @playlists
+      lists.push @playlists[key]
+    listToPlay = lists[Math.floor(Math.random()*lists.length)]
+    set_playlist listToPlay
+    return listToPlay
+
   # Adds a playlist to the storage and updates our internal list
   add_playlist: (name, spotify_url) ->
     return false if !name? || !spotify_url? || !spotify_url.match(/spotify:user:.*:playlist:[0-9a-zA-Z]+/)
