@@ -103,6 +103,11 @@ class SpotifyHandler
     @spotify.player.stop()
     return
 
+  # Returns how many seconds are left in the current song
+  getDuration: ->
+    return @state.track.object.duration - @spotify.player.currentSecond
+    
+
   # Returns an array of tracks from the queue in the form of '*trackname* by *trackartists*'
   getQueue: ->
     queueList = []
@@ -270,9 +275,8 @@ class SpotifyHandler
   list_random: ->
     lists = []
     for key of @playlists
-      lists.push @playlists[key]
+      lists.push key
     listToPlay = lists[Math.floor(Math.random()*lists.length)]
-    set_playlist listToPlay
     return listToPlay
 
   # Adds a playlist to the storage and updates our internal list
