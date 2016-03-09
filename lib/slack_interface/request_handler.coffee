@@ -44,6 +44,11 @@ class SlackInterfaceRequestHandler
               when 'emptyqueue'
                 @spotify.emptyQueue()
                 reply_data['text'] = "The queue has been emptied :anguished:"
+                
+              when 'duration'
+                duration = @spotify.getDuration()
+                reply_data['text'] = "The song ends in " + duration + " seconds."
+                
 
               when 'queue'
                 if @auth.args[0]?
@@ -88,9 +93,10 @@ class SlackInterfaceRequestHandler
                     when 'add' then status = @spotify.add_playlist @auth.args[1], @auth.args[2]
                     when 'remove' then status = @spotify.remove_playlist @auth.args[1]
                     when 'rename' then status = @spotify.rename_playlist @auth.args[1], @auth.args[2]
-                    when 'random' then random = @spotify.list_random
+                    when 'random' then random = @spotify.list_random()
                     else status = @spotify.set_playlist @auth.args[0]
                   if random
+                    @spotify.set_playlist random
                     reply_data['text'] = 'Now playing list: ' + random
                   else if status
                     reply_data['text'] = ['Ok.', 'Sweet.', 'Chur.', 'Done like dinner.', 'sorted.org.nz (use your mouse!)', 'Coolies.', 'No problem, brah.', 'Affirmative.', 'Gotcha.', 'Aye-aye, captain! :captain:'][Math.floor(Math.random() * 10)]
@@ -146,6 +152,7 @@ class SlackInterfaceRequestHandler
                 \n> `mute` - Same as `vol 0`.
                 \n> `unmute` - Same as `vol 5`.
                 \n> `status` - Shows the currently playing song, playlist and whether you're shuffling or not.
+                \n> `duration` - Displays the amount of seconds until the current song finishes.
                 \n> `help` - Shows a list of commands with a short explanation.
                     \n*Playlists*
                 \n> `list add <name> <Spotify URI>` - Adds a list that can later be accessed under <name>.
