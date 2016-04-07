@@ -93,7 +93,7 @@ class SlackInterfaceRequestHandler
                     when 'add' then status = @spotify.add_playlist @auth.args[1], @auth.args[2]
                     when 'remove' then status = @spotify.remove_playlist @auth.args[1]
                     when 'rename' then status = @spotify.rename_playlist @auth.args[1], @auth.args[2]
-                    when 'random' then random = @spotify.list_random()
+                    when 'random', 'roulette' then random = @spotify.list_random()
                     else status = @spotify.set_playlist @auth.args[0]
                   if random
                     @spotify.set_playlist random
