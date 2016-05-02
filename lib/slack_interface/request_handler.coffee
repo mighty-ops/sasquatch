@@ -18,6 +18,8 @@ class SlackInterfaceRequestHandler
             # We can store the user who issued the command
             @queuer = request.body['user_name']
             
+            hold_vol = false
+
             muppets = ['spotify:track:3iwC7lNEnW2XefyROIiAtB', 'spotify:track:3sXJTHeaEXEgziOCyI4DYl', 'spotify:track:6eVUH8bqIo2x6sfeeUGkHU', 'spotify:track:6RKbWCytFTB6emlcnrsdpt', 'spotify:track:5Kgjzdpk6INHN7MHVW1CdM', 'spotify:track:0SMobBlnSvGStk8rDfXLgs']
 
             switch @auth.command.toLowerCase()
@@ -49,7 +51,6 @@ class SlackInterfaceRequestHandler
                 duration = @spotify.getDuration()
                 reply_data['text'] = "The song ends in " + duration + " seconds."
                 
-
               when 'queue'
                 if @auth.args[0]?
                   if @spotify.addtoqueue @auth.args[0], @queuer
@@ -62,7 +63,6 @@ class SlackInterfaceRequestHandler
                     reply_data['text'] = "In the queue we have... \n• " + queueList.join('\n• ')
                   else
                     reply_data['text'] = "There are currently no items in the queue."
-
 
               when 'stop'
                 @spotify.stop()
@@ -85,6 +85,16 @@ class SlackInterfaceRequestHandler
                     when "down" then @volume.down()
                     else @volume.set @auth.args[0]
                 reply_data['text'] = "Current Volume: *#{@volume.current_step}*"
+
+              when 'phone'
+                if hold_vol
+                  @volume.set hold_vol
+                  hold_vol = false
+                  reply_data['text'] = "And we're back. Hope you closed that deal!"
+                else
+                  hold_vol = @volume.current_step
+                  @volume.set 2
+                  reply_data['text'] = "Shh! Someone's taking a very important business call."
 
               when 'list'
                 if @auth.args[0]?
@@ -149,6 +159,7 @@ class SlackInterfaceRequestHandler
                 \n> `back` - Returns to the previous track in the playlist.
                 \n> `shuffle` - Toggles shuffle on or off and resets the tracker.
                 \n> `vol [up|down|0..10]` Turns the volume either up/down one notch or directly to a step between `0` (mute) and `10` (full blast). Also goes to `11`.
+                \n> `phone` - Temporarily turns the volume down if someone needs to take a call (or puts it back once the call has finished)
                 \n> `mute` - Same as `vol 0`.
                 \n> `unmute` - Same as `vol 5`.
                 \n> `status` - Shows the currently playing song, playlist and whether you're shuffling or not.
