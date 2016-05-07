@@ -18,8 +18,6 @@ class SlackInterfaceRequestHandler
             # We can store the user who issued the command
             @queuer = request.body['user_name']
             
-            hold_vol = false
-
             muppets = ['spotify:track:3iwC7lNEnW2XefyROIiAtB', 'spotify:track:3sXJTHeaEXEgziOCyI4DYl', 'spotify:track:6eVUH8bqIo2x6sfeeUGkHU', 'spotify:track:6RKbWCytFTB6emlcnrsdpt', 'spotify:track:5Kgjzdpk6INHN7MHVW1CdM', 'spotify:track:0SMobBlnSvGStk8rDfXLgs']
 
             switch @auth.command.toLowerCase()
@@ -28,8 +26,8 @@ class SlackInterfaceRequestHandler
               when 'back' then @spotify.back()
               when 'reconnect' then @spotify.connect()
               when 'restart' then process.exit 1
-              when 'mute' then @volume.set 0
-              when 'unmute' then @volume.set 5
+              when 'mute' then @volume.mute
+              when 'unmute' then @volume.mute
               when 'scrubs' then @spotify.play 'spotify:track:1KGi9sZVMeszgZOWivFpxs', @queuer
               when 'spaceman' then @spotify.play 'spotify:track:2Elq6GxVh8v9QFCF3ca2Xc', @queuer
               when 'uptownfunk' then @spotify.play 'spotify:track:32OlwWuMpZ6b0aN2RZOeMS', @queuer
@@ -87,14 +85,11 @@ class SlackInterfaceRequestHandler
                 reply_data['text'] = "Current Volume: *#{@volume.current_step}*"
 
               when 'phone'
-                if hold_vol
-                  @volume.set hold_vol
-                  hold_vol = false
+                @volume.phone
+                if @volume.sticky_volume.status == "phone"
+                    reply_data['text'] = "Shh! Someone's taking a very important business call."
+                else if @volume.sticky_volume.status == "none" 
                   reply_data['text'] = "And we're back. Hope you closed that deal!"
-                else
-                  hold_vol = @volume.current_step
-                  @volume.set 2
-                  reply_data['text'] = "Shh! Someone's taking a very important business call."
 
               when 'list'
                 if @auth.args[0]?
