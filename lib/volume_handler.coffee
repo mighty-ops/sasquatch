@@ -5,6 +5,10 @@ class VolumeHandler
   constructor: (initial_step = 5) ->
     @exec = require('child_process').exec
     @set initial_step
+    
+    # Adding somewhere to store a held volume
+    # and the reason it was held
+    @sticky_volume = status: "none", value: 0
 
   # Changes the output Volume.
   # This requires a command-line call, so we pre-process the argument accordingly.
@@ -20,6 +24,31 @@ class VolumeHandler
 
   down: () ->
     @set @current_step-1
+    
+  mute: () ->
+    if @current_step == 0 and @sticky_volume.status == "mute"
+      @set @sticky_volume.value
+      @sticky_volume = status: "none", value: 0
+    else if @sticky_volume.status == "phone"
+      @set 0
+      @sticky_volume.status = "mute"
+    else
+      @sticky_volume = status: "mute", value: @current_step
+      @set 0
+      
+  phone: () ->
+    if @current_step > 2
+      @sticky_volume = status: "phone", value: @current_step
+      @set 2
+    else if @sticky_volume.status == "phone" && @current_step == 2
+      @set @sticky_volume.value
+      @sticky_volume = status: "none", value: 0
+    else if @current_step == 2
+      @set 1
+      @sticky_volume.status = "phone"
+    else if @current_step == 1
+      @set 2
+      @sticky_volume.status = "none"
 
   # Makes sure the step is a number between 0 and 10
   validate_step: (step) ->
