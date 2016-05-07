@@ -156,7 +156,7 @@ class SlackInterfaceRequestHandler
                 \n> `vol [up|down|0..10]` Turns the volume either up/down one notch or directly to a step between `0` (mute) and `10` (full blast). Also goes to `11`.
                 \n> `phone` - Temporarily turns the volume down if someone needs to take a call (or puts it back once the call has finished)
                 \n> `mute` - Same as `vol 0`.
-                \n> `unmute` - Same as `vol 5`.
+                \n> `unmute` - Returns volume to pre-mute level.
                 \n> `status` - Shows the currently playing song, playlist and whether you're shuffling or not.
                 \n> `duration` - Displays the amount of seconds until the current song finishes.
                 \n> `help` - Shows a list of commands with a short explanation.
