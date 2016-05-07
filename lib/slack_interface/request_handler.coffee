@@ -173,6 +173,9 @@ class SlackInterfaceRequestHandler
                 if status?
                   reply_data['text'] = status
 
+            if @volume.sticky_volume.status == "mute" then reply_data['icon_emoji'] = ":sasmute:"
+            else if @volume.sticky_volume.status == "phone" then reply_data['icon_emoji'] = ":sasphone:"
+
             response.serveJSON reply_data
             return
           return
