@@ -26,8 +26,8 @@ class SlackInterfaceRequestHandler
               when 'back' then @spotify.back()
               when 'reconnect' then @spotify.connect()
               when 'restart' then process.exit 1
-              when 'mute' then @volume.mute
-              when 'unmute' then @volume.mute
+              when 'mute' then @volume.mute()
+              when 'unmute' then @volume.mute()
               when 'scrubs' then @spotify.play 'spotify:track:1KGi9sZVMeszgZOWivFpxs', @queuer
               when 'spaceman' then @spotify.play 'spotify:track:2Elq6GxVh8v9QFCF3ca2Xc', @queuer
               when 'uptownfunk' then @spotify.play 'spotify:track:32OlwWuMpZ6b0aN2RZOeMS', @queuer
@@ -85,7 +85,7 @@ class SlackInterfaceRequestHandler
                 reply_data['text'] = "Current Volume: *#{@volume.current_step}*"
 
               when 'phone'
-                @volume.phone
+                @volume.phone()
                 if @volume.sticky_volume.status == "phone"
                     reply_data['text'] = "Shh! Someone's taking a very important business call."
                 else if @volume.sticky_volume.status == "none" 

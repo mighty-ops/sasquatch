@@ -1,17 +1,17 @@
 <p align="center">
-  <img src="http://res.cloudinary.com/hlwjgyj8f/image/upload/v1410430228/h71mqvptn5t1yc9pdjuf.png" alt="CrispyFi" />
+  <img src="http://rlv.zcache.com/bigfoot_sasquatch_on_disco_ball_3_inch_round_magnet-r5ae397963b3b4beea5e47cd5296067a6_x7s2r_1024.jpg?rlvnet=1" alt="Sasquatch" />
 </p>
 <hr />
-*CrispyFi* is a local pseudo-bot for [Slack](http://slack.com) that controls what the people in your office have to listen to. It's comprised of a small Node.js-based server that interfaces with Spotify and is controlled by chat commands in your Slack chatroom of choice. It's designed to run on a Raspberry Pi connected to your sound system, but should work on any system that supports [node-spotify](http://node-spotify.com) and volume control using `amixer` (not required, though). Sound is streamed to your device's default audio output and thus can work with the integrated audio jack, HDMI output or additional sound boards like the HiFiBerry.
+*Sasquatch* is a local pseudo-bot for [Slack](http://slack.com) that controls what the people in your office have to listen to. It was built on top of CrispyFi, a small Node.js-based server that interfaces with Spotify and is controlled by chat commands in your Slack chatroom of choice. It's designed to run on a Raspberry Pi connected to your sound system, but should work on any system that supports [node-spotify](http://node-spotify.com) and volume control using `amixer` (not required, though). Sound is streamed to your device's default audio output and thus can work with the integrated audio jack, HDMI output or additional sound boards like the HiFiBerry.
 
 ## Local pseudo-bot?
-In contrast to many existing Slack integrations, you're supposed to run CrispyFi locally in your office where it can access your sound hardware. Also, it's not really an IRC-style bot since it doesn't connect to your chat rooms itself, but rather listens to simple HTTP requests and replies accordingly. If you issue these commands from Slack, you'll even get comments back.
+In contrast to many existing Slack integrations, you're supposed to run Sasquatch locally in your office where it can access your sound hardware. Also, it's not really an IRC-style bot since it doesn't connect to your chat rooms itself, but rather listens to simple HTTP requests and replies accordingly. If you issue these commands from Slack, you'll even get comments back.
 
 ## Requirements
-There are three main prerequisites for CrispyFi to do his job:
+There are three main prerequisites for Sasquatch to do his job:
 
 * Node.js installed on your Raspberry. [This link](http://joshondesign.com/2013/10/23/noderpi) should get you there in a few minutes.
-* A Spotify account. CrispyFi doesn't care for your MP3s.
+* A Premium Spotify account. Sasquatch doesn't care for your MP3s.
 * A Spotify API-Key. You need to apply for one, which you can do [here](https://devaccount.spotify.com/my-account/keys/).
 
 ## Installation
@@ -21,7 +21,7 @@ There are three main prerequisites for CrispyFi to do his job:
 4. `npm install`
 5. `npm start` or `node index`, whatever works for you.
 
-That's it, your personal CrispyFi instance is now ready to serve requests. There's some additional steps you might want to take, though, (e.g. integrating it with Slack), so read on!
+That's it, your personal Sasquatch instance is now ready to serve requests. There's some additional steps you might want to take, though, (e.g. integrating it with Slack), so read on!
 
 ## Configuration
 All the important bits are controlled by `config.json` in the project's root path. Below is a code example with comments which *you need to remove* when you copy/pase it, since comments are not allowed in JSON files.
@@ -34,7 +34,7 @@ All the important bits are controlled by `config.json` in the project's root pat
   },
   "auth": {
   	// Slack generates one token per integration, so you can just put them
-  	// all in here. We don't check the token per integraion, but rather
+  	// all in here. We don't check the token per integration, but rather
   	// just whether it's included in this list.
     "tokens": [
       "slack-token-one",
@@ -45,7 +45,7 @@ All the important bits are controlled by `config.json` in the project's root pat
 ```
 
 ## How does it work?
-By default, CrispyFi listens on port 8000 and provides a single HTTP endpoint. To issue orders to it, you have to POST to the endpoint and provide an authentication token as well as a command. The format of this is a bit non-standard (i.e. no token in the header) since we built it to be mainly used in combination with Slack's outgoing webhooks. You should probably create an outgoing webhook first and familiarize yourself with the semantics, but the short version is you need a POST body with the following fields:
+By default, Sasquatch listens on port 8000 and provides a single HTTP endpoint. To issue orders to it, you have to POST to the endpoint and provide an authentication token as well as a command. The format of this is a bit non-standard (i.e. no token in the header) since we built it to be mainly used in combination with Slack's outgoing webhooks. You should probably create an outgoing webhook first and familiarize yourself with the semantics, but the short version is you need a POST body with the following fields:
 
 ```
 token=<your auth thoken>
@@ -64,12 +64,12 @@ Currently the following trigger words are available:
 * `status` - Shows the currently playing song, playlist and whether you're shuffling or not.
 * `help` - Shows a list of commands with a short explanation.
 
-If you're using Slack integrations, simply create an outgoing webhook to `http://your-crispyfi-url/handle` that listens to the appropriate trigger words. See below for an example screenshot of our setup. To disable certain funtions, just remove the trigger word.
+If you're using Slack integrations, simply create an outgoing webhook to `http://your-sasquatch-url/handle` that listens to the appropriate trigger words. See below for an example screenshot of our setup. To disable certain funtions, just remove the trigger word.
 
 ![Slack integration](http://i.imgur.com/Tye5R2W.png)
 
 ## Playlists
-CrispyFi provides a command line-like interface to its internal playlist handling you can use to add, remove and rename lists. This data is persisted between sessions and will be available upon restart. On a fresh startup, CrispyFi attempts to load the last playlists you used or, failing that, will look for a playlist named "default". If neither of those work, it'll just pout a bit and not play anything. Using this interface is straight forward:
+Sasquatch provides a command line-like interface to its internal playlist handling you can use to add, remove and rename lists. This data is persisted between sessions and will be available upon restart. On a fresh startup, Sasquatch attempts to load the last playlists you used or, failing that, will look for a playlist named "default". If neither of those work, it'll just pout a bit and not play anything. Using this interface is straight forward:
 
 * `list add <name> <Spotify URI>` - Adds a list that can later be accessed under <name>.
 * `list remove <name>` - Removes the specified list.
@@ -77,7 +77,7 @@ CrispyFi provides a command line-like interface to its internal playlist handlin
 * `list <name>` - Selects the specified list and starts playback.
 
 ## Plugins
-If CrispyFi doesn't do what you need, you can extend it. The plugin architecture is pretty minimal at this point, but at least there's a standardized interface. If none of the default trigger words matched, each plugin's `handle` method will be called until one is found that returns `true`. If a plugin returns `true`, the plugin chain is halted and the plugin's `status` attribute is checked for content. If it's not empty, its content will be replied to the Slack channel CrispyFi listens to. If it's empty, nothing further will happen (the plugin chain will *not* be traversed further, though).
+If Sasquatch doesn't do what you need, you can extend it. The plugin architecture is pretty minimal at this point, but at least there's a standardized interface. If none of the default trigger words matched, each plugin's `handle` method will be called until one is found that returns `true`. If a plugin returns `true`, the plugin chain is halted and the plugin's `status` attribute is checked for content. If it's not empty, its content will be replied to the Slack channel Sasquatch listens to. If it's empty, nothing further will happen (the plugin chain will *not* be traversed further, though).
 
 Plugins live in `/plugins` and need a `name` attribute. A minimal example implementation is provided in `examples/my_first_plugin.coffee`.
 
