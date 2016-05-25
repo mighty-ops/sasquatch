@@ -21,19 +21,34 @@ class SlackInterfaceRequestHandler
             muppets = ['spotify:track:3iwC7lNEnW2XefyROIiAtB', 'spotify:track:3sXJTHeaEXEgziOCyI4DYl', 'spotify:track:6eVUH8bqIo2x6sfeeUGkHU', 'spotify:track:6RKbWCytFTB6emlcnrsdpt', 'spotify:track:5Kgjzdpk6INHN7MHVW1CdM', 'spotify:track:0SMobBlnSvGStk8rDfXLgs']
 
             switch @auth.command.toLowerCase()
-              when 'pause' then @spotify.pause()
-              when 'skip' then @spotify.skip()
-              when 'back' then @spotify.back()
               when 'reconnect' then @spotify.connect()
               when 'restart' then process.exit 1
-              when 'mute' then @volume.mute()
-              when 'unmute' then @volume.mute()
               when 'scrubs' then @spotify.play 'spotify:track:1KGi9sZVMeszgZOWivFpxs', @queuer
               when 'spaceman' then @spotify.play 'spotify:track:2Elq6GxVh8v9QFCF3ca2Xc', @queuer
               when 'uptownfunk' then @spotify.play 'spotify:track:32OlwWuMpZ6b0aN2RZOeMS', @queuer
               when 'hustle' then @spotify.play 'spotify:track:0rBMP6VVGRgwnzZCLpijyl', @queuer
               when 'attak' then @spotify.play 'spotify:track:6XNmtLiveX987arpfhYGrj', @queuer
               when 'muppets' then @spotify.play muppets[Math.floor(Math.random()*muppets.length)], @queuer
+
+              when 'pause'
+                @spotify.pause()
+                reply_data['text'] = "Paused."
+
+              when 'back'
+                @spotify.back()
+                reply_data['text'] = "Now playing previous song."
+
+              when 'mute'
+                @volume.mute()
+                reply_data['text'] = "Muted."
+
+              when 'unmute'
+                @volume.mute()
+                reply_data['text'] = "Unmuted."
+
+              when 'skip'
+                reply_data['text'] = "Skipped *<#{@spotify.state.track.object.link}|#{@spotify.state.track.name}>* by *#{@spotify.state.track.artists}*."
+                @spotify.skip()
 
               when 'critical'
                 @exec('~/critical-script', (error, stdout, stderr) -> )
