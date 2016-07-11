@@ -194,7 +194,7 @@ class SlackInterfaceRequestHandler
               when 'rule'
                 if @auth.args[0]?
                   if rules[@auth.args[0]]
-                    reply_data['text'] = rules[@auth.args[0]
+                    reply_data['text'] = rules[@auth.args[0]]
                     reply_data['icon_emoji'] = ":sascoc:"
                 else reply_data['text'] = "You'll need to be more specific - or check the `CoC` for a full list."
 
