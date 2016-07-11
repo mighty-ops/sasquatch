@@ -40,7 +40,7 @@ class VolumeHandler
     if @current_step > 2
       @sticky_volume = status: "phone", value: @current_step
       @set 2
-    else if @sticky_volume.status == "phone" && @current_step == 2
+    else if @sticky_volume.status == "phone"
       @set @sticky_volume.value
       @sticky_volume = status: "none", value: 0
     else if @current_step == 2
