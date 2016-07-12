@@ -20,6 +20,8 @@ class SlackInterfaceRequestHandler
             
             muppets = ['spotify:track:3iwC7lNEnW2XefyROIiAtB', 'spotify:track:3sXJTHeaEXEgziOCyI4DYl', 'spotify:track:6eVUH8bqIo2x6sfeeUGkHU', 'spotify:track:6RKbWCytFTB6emlcnrsdpt', 'spotify:track:5Kgjzdpk6INHN7MHVW1CdM', 'spotify:track:0SMobBlnSvGStk8rDfXLgs']
 
+            rules = ['*Herein lie the rules of belonging to the cult of Sasquatch!*', '>First Rule of Sasquatch: Never `skip` a `queue` (from someone who can hear it).', '>Second Rule of Sasquatch: It is _always_ OK to switch from `list` john.', '>Third Rule of Sasquatch: Thursday is for Throwbacks. Deal with it.', '>Fourth Rule of Sasquatch: You `phone` it down, you `phone` it back up.', '>Fifth Rule of Sasquatch: Don\'t be a dick, or someone will get the `CoC` out on you.']
+
             switch @auth.command.toLowerCase()
               when 'reconnect' then @spotify.connect()
               when 'restart' then process.exit 1
@@ -93,11 +95,14 @@ class SlackInterfaceRequestHandler
 
               when 'vol'
                 if @auth.args[0]?
-                  switch @auth.args[0]
-                    when "up" then @volume.up()
-                    when "down" then @volume.down()
-                    else @volume.set @auth.args[0]
-                reply_data['text'] = "Current Volume: *#{@volume.current_step}*"
+                  if @volume.sticky_volume.status == "none"
+                    switch @auth.args[0]
+                      when "up" then @volume.up()
+                      when "down" then @volume.down()
+                      else @volume.set @auth.args[0]
+                    reply_data['text'] = "Current Volume: *#{@volume.current_step}*"
+                  else reply_data['text'] = "Volume is locked! Please unlock with the correct command."
+                else reply_data['text'] = "Current Volume: *#{@volume.current_step}*"
 
               when 'phone'
                 @volume.phone()
@@ -174,6 +179,7 @@ class SlackInterfaceRequestHandler
                 \n> `unmute` - Returns volume to pre-mute level.
                 \n> `status` - Shows the currently playing song, playlist and whether you're shuffling or not.
                 \n> `duration` - Displays the amount of seconds until the current song finishes.
+                \n> `coc` - Lay down the law with the Code of Conduct. If you need to get specific, whip out a `rule` by number.
                 \n> `help` - Shows a list of commands with a short explanation.
                     \n*Playlists*
                 \n> `list add <name> <Spotify URI>` - Adds a list that can later be accessed under <name>.
@@ -181,6 +187,17 @@ class SlackInterfaceRequestHandler
                 \n> `list rename <old name> <new name>` - Renames the specified list.
                 \n> `list random` - Plays a random list.
                 \n> `list <name>` - Selects the specified list and starts playback."
+
+              when 'coc'
+                reply_data['text'] = rules.join '\n'
+                reply_data['icon_emoji'] = ":sascoc:"
+
+              when 'rule'
+                if @auth.args[0]?
+                  if rules[@auth.args[0]]
+                    reply_data['text'] = rules[@auth.args[0]]
+                    reply_data['icon_emoji'] = ":sascoc:"
+                else reply_data['text'] = "You'll need to be more specific - or check the `CoC` for a full list."
 
               else
                 # Fallback to external plugins.
