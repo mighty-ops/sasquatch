@@ -179,6 +179,7 @@ class SlackInterfaceRequestHandler
                 \n> `unmute` - Returns volume to pre-mute level.
                 \n> `status` - Shows the currently playing song, playlist and whether you're shuffling or not.
                 \n> `duration` - Displays the amount of seconds until the current song finishes.
+                \n> `coc` - Lay down the law with the Code of Conduct. If you need to get specific, whip out a `rule` by number.
                 \n> `help` - Shows a list of commands with a short explanation.
                     \n*Playlists*
                 \n> `list add <name> <Spotify URI>` - Adds a list that can later be accessed under <name>.
