@@ -5,3 +5,4 @@ persist/*
 .idea/*
 config.json
 spotify_appkey.key
+plugins/*
