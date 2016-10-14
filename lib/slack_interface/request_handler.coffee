@@ -84,10 +84,7 @@ class SlackInterfaceRequestHandler
                 reply_data['text'] = ['HAMMER TIME!', 'Collaborate and LISTEN!', 'Right now, thank you very much, I need somebody with the human touch!', 'In the NAAAAAME of love!', 'Me if you\'ve heard this one before'][Math.floor(Math.random() * 5)]
 
               when 'play'
-                if @auth.args[0]?
-                    @spotify.play @auth.args[0], @queuer
-                else
-                    @spotify.play()
+                reply_data['text'] = "Please use `queue` instead"
 
               when 'shuffle'
                 @spotify.toggle_shuffle()
