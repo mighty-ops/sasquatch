@@ -105,8 +105,14 @@ class SpotifyHandler
 
   # Returns how many seconds are left in the current song
   getDuration: ->
-    return @state.track.object.duration - @spotify.player.currentSecond
-    
+    totalSecondsLeft = @state.track.object.duration - @spotify.player.currentSecond
+    minutesLeft = Math.floor totalSecondsLeft / 60
+    secondsLeft = totalSecondsLeft % 60
+
+    if minutesLeft == 0
+      secondsLeft + ' seconds.'
+    else
+      minutesLeft + ' mins and ' + secondsLeft + ' seconds.'
 
   # Returns an array of tracks from the queue in the form of '*trackname* by *trackartists*'
   getQueue: ->

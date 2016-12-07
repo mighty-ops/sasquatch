@@ -64,7 +64,7 @@ class SlackInterfaceRequestHandler
                 
               when 'duration'
                 duration = @spotify.getDuration()
-                reply_data['text'] = "The song ends in " + duration + " seconds."
+                reply_data['text'] = "The song ends in " + duration
                 
               when 'queue'
                 if @auth.args[0]?
