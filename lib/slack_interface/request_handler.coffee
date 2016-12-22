@@ -112,7 +112,46 @@ class SlackInterfaceRequestHandler
                   reply_data['text'] = "And we're back. Hope you closed that deal!"
 
               when 'list'
-                if @auth.args[0]?
+                sortObject = (o) ->
+                  sorted = {}
+                  key = undefined
+                  a = []
+                  for key of o
+                    `key = key`
+                    if o.hasOwnProperty(key)
+                      a.push key
+                  a.sort (a, b) ->
+                    a.toLowerCase().localeCompare b.toLowerCase()
+                  key = 0
+                  while key < a.length
+                    sorted[a[key]] = o[a[key]]
+                    key++
+                  sorted
+                orderedPlaylists = sortObject @spotify.playlists
+                #if someone types "list | grep <search>" or "list search <search>"
+                if (@auth.args[0] == '|' and @auth.args[1] == 'grep') or @auth.args[0] == 'search'
+                  #store search term, change index of it, depending on the command used
+                  if @auth.args[0] == '|'
+                    search = @auth.args[2]
+                  else
+                    search = @auth.args[1]
+                  #iterate array for use later
+                  returnedPlaylist = []
+                  #loop the current playlists
+                  for key of orderedPlaylists
+                    #if search exists in key
+                    if key.toLowerCase().indexOf(search.toLowerCase()) isnt -1
+                      #add this playlist to the ones to return
+                      returnedPlaylist.push "<#{@spotify.playlists[key]}|#{key}>"
+                  #if there's no playlists to return
+                  if returnedPlaylist.length < 1
+                    str = "No playlists match that search."
+                  #otherwise list the playlists
+                  else
+                    str = 'Playlists in your search:\n' + returnedPlaylist.join ', '
+                  reply_data['text'] = str
+                #otherwise if there's an argument and we aren't "grepping"
+                else if @auth.args[0]?
                   random = false
                   switch @auth.args[0]
                     when 'add' then status = @spotify.add_playlist @auth.args[1], @auth.args[2]
@@ -127,28 +166,14 @@ class SlackInterfaceRequestHandler
                     reply_data['text'] = ['Ok.', 'Sweet.', 'Chur.', 'Done like dinner.', 'sorted.org.nz (use your mouse!)', 'Coolies.', 'No problem, brah.', 'Affirmative.', 'Gotcha.', 'Aye-aye, captain! :captain:'][Math.floor(Math.random() * 10)]
                   else
                     reply_data['text'] = "Oops, you did it again. Try `help` if you need some."
+                #no arguments, just list all the playlists
                 else
-                  sortObject = (o) ->
-                    sorted = {}
-                    key = undefined
-                    a = []
-                    for key of o
-                      `key = key`
-                      if o.hasOwnProperty(key)
-                        a.push key
-                    a.sort (a, b) ->
-                      a.toLowerCase().localeCompare b.toLowerCase()
-                    key = 0
-                    while key < a.length
-                      sorted[a[key]] = o[a[key]]
-                      key++
-                    sorted
-                  orderedPlaylists = sortObject @spotify.playlists
                   cleanPlaylists = []
                   for key of orderedPlaylists
                     cleanPlaylists.push "<#{@spotify.playlists[key]}|#{key}>"
                   str = 'Currently available playlists:\n' + cleanPlaylists.join ', '
                   reply_data['text'] = str
+
 
               when 'status', 'stat'
                 shuffleword = if @spotify.shuffle then '' else ' not'
@@ -186,7 +211,9 @@ class SlackInterfaceRequestHandler
                 \n> `list remove <name>` - Removes the specified list.
                 \n> `list rename <old name> <new name>` - Renames the specified list.
                 \n> `list random` - Plays a random list.
-                \n> `list <name>` - Selects the specified list and starts playback."
+                \n> `list <name>` - Selects the specified list and starts playback.
+                \n> `list | grep <name>` - Shows playlists which match the search term.
+                \n> `list search <name>` - Same as above, Scott made me add it."
 
               when 'coc'
                 reply_data['text'] = rules.join '\n'
