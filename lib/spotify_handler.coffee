@@ -259,8 +259,8 @@ class SpotifyHandler
       else if playlist
         @spotify.waitForLoaded [playlist], (playlist) =>
           @_set_playlist_callback name, playlist
-          return true
-    return true
+      return true
+    return false
 
 
   # The actual handling of the new playlist once it has been loaded.
@@ -306,11 +306,87 @@ class SpotifyHandler
     @storage.setItem 'playlists', @playlists
     return true
 
-  addtoqueue: (track, queuer) ->
-    strack = @spotify.createFromLink @_sanitize_link(track)
-    if (strack)
-      strack['queuer'] = queuer
-      @queue.push strack
+  # Adds items to the queue, accepts tracks, playlists, albums and artists
+  # @param {string} link - spotify url/uri
+  # @param {string} queuer - the name of the person who queued the track
+  addtoqueue: (link, queuer) ->
+    slink = @_sanitize_link(link)
+    if slink.indexOf(':track:') > -1
+      return @addTrackToQueue slink, queuer
+    if slink.indexOf(':playlist:') > -1
+      return @addPlaylistToQueue slink, queuer
+    if slink.indexOf(':album:') > -1
+      return @addAlbumToQueue slink, queuer
+    if slink.indexOf(':artist:') > -1
+      return @addArtistToQueue slink, queuer
+    return false
+
+  # Adds a single track to the queue
+  # @param {string} link - spotify url/uri
+  # @param {string} queuer - the name of the person who queued the track
+  # @returns {boolean}
+  addTrackToQueue: (link, queuer) ->
+    strack = @spotify.createFromLink link
+    if strack
+      @queueLoadedTrack strack, queuer
+      return true
+    return false
+
+  # Loads a playlist then adds each individual track to the queue
+  # @param {string} link - spotify url/uri
+  # @param {string} queuer - the name of the person who queued the track
+  # @returns {boolean}
+  addPlaylistToQueue: (link, queuer) ->
+    playlist = @spotify.createFromLink link
+    if !playlist
+      return false
+    if !playlist.isLoaded
+      @spotify.waitForLoaded [playlist], (loadedPlaylist) =>
+        @addTracksToQueue loadedPlaylist.getTracks(), queuer
+      return true
+    else
+      @addTracksToQueue playlist.getTracks(), queuer
+      return true
+
+  # Loads an album then adds each individual track to the queue
+  # @param {string} link - spotify url/uri
+  # @param {string} queuer - the name of the person who queued the track
+  # @returns {boolean}
+  addAlbumToQueue: (link, queuer) ->
+    album = @spotify.createFromLink link
+    if !album
+      return false
+    album.browse((err, browsedAlbum) =>
+      @addTracksToQueue browsedAlbum.tracks, queuer
+    )
+    return true
+
+  # TODO
+  addArtistToQueue: (artist, queuer) ->
+    return false
+
+  # Adds an array of tracks to the queue
+  # @param {array} tracks - an array of spotify track objects
+  # @param {string} queuer - the name of the person who queued the track
+  addTracksToQueue: (tracks, queuer) ->
+    if tracks[0]
+      if tracks[0].isLoaded
+        @queueLoadedTrack tracks[0], queuer
+        tracks.shift()
+        @addTracksToQueue tracks, queuer;
+      else
+        @spotify.waitForLoaded [tracks[0]], (loadedTrack) =>
+          @queueLoadedTrack loadedTrack, queuer
+          tracks.shift()
+          @addTracksToQueue tracks, queuer;
+
+  # Pushes a spotify track to the queue
+  # @param {object} strack - spotify loaded track
+  # @param {string} queuer - the name of the person who queued the track
+  queueLoadedTrack: (strack, queuer) ->
+    strack['queuer'] = queuer
+    @queue.push strack
+    return true
 
   # Removes everything that shouldn't be in a link, especially Slack's <> encasing
   _sanitize_link: (link) ->
