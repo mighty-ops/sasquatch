@@ -17,7 +17,7 @@ class SlackInterfaceRequestHandler
 
             # We can store the user who issued the command
             @queuer = request.body['user_name']
-            
+
             muppets = ['spotify:track:3iwC7lNEnW2XefyROIiAtB', 'spotify:track:3sXJTHeaEXEgziOCyI4DYl', 'spotify:track:6eVUH8bqIo2x6sfeeUGkHU', 'spotify:track:6RKbWCytFTB6emlcnrsdpt', 'spotify:track:5Kgjzdpk6INHN7MHVW1CdM', 'spotify:track:0SMobBlnSvGStk8rDfXLgs']
 
             rules = ['*Herein lie the rules of belonging to the cult of Sasquatch!*', '>First Rule of Sasquatch: Never `skip` a `queue` (from someone who can hear it).', '>Second Rule of Sasquatch: It is _always_ OK to switch from `list` john.', '>Third Rule of Sasquatch: Thursday is for Throwbacks. Deal with it.', '>Fourth Rule of Sasquatch: You `phone` it down, you `phone` it back up.', '>Fifth Rule of Sasquatch: Don\'t be a dick, or someone will get the `CoC` out on you.']
@@ -61,17 +61,17 @@ class SlackInterfaceRequestHandler
               when 'emptyqueue'
                 @spotify.emptyQueue()
                 reply_data['text'] = "The queue has been emptied :anguished:"
-                
-              when 'duration'
+
+              when 'duration', 'eta'
                 duration = @spotify.getDuration()
                 reply_data['text'] = "The song ends in " + duration
-                
-              when 'queue'
+
+              when 'queue', 'q'
                 if @auth.args[0]?
                   if @spotify.addtoqueue @auth.args[0], @queuer
-                  	reply_data['text'] = "Queued ^.^"
+                    reply_data['text'] = "Queued ^.^"
                   else
-                    reply_data['text'] = "Invalid track. Jesus. What are you even doing. Give up BAKA ONIICHAN."
+                    reply_data['text'] = "Sorry, I can't recognise that link."
                 else
                   queueList = @spotify.getQueue()
                   if queueList.length
@@ -108,7 +108,7 @@ class SlackInterfaceRequestHandler
                 @volume.phone()
                 if @volume.sticky_volume.status == "phone"
                     reply_data['text'] = "Shh! Someone's taking a very important business call."
-                else if @volume.sticky_volume.status == "none" 
+                else if @volume.sticky_volume.status == "none"
                   reply_data['text'] = "And we're back. Hope you closed that deal!"
 
               when 'list'
@@ -203,7 +203,7 @@ class SlackInterfaceRequestHandler
                 \n> `mute` - Same as `vol 0`.
                 \n> `unmute` - Returns volume to pre-mute level.
                 \n> `status` - Shows the currently playing song, playlist and whether you're shuffling or not.
-                \n> `duration` - Displays the amount of seconds until the current song finishes.
+                \n> `eta` - Displays the amount of seconds until the current song finishes.
                 \n> `coc` - Lay down the law with the Code of Conduct. If you need to get specific, whip out a `rule` by number.
                 \n> `help` - Shows a list of commands with a short explanation.
                     \n*Playlists*
