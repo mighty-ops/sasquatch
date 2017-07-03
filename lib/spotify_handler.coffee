@@ -391,7 +391,7 @@ class SpotifyHandler
   # Removes everything that shouldn't be in a link, especially Slack's <> encasing
   _sanitize_link: (link) ->
     link = link.replace(/[\/]/g, ':')
-    link = link.replace(/[^0-9a-zA-Z:#]/g, '')
+    link = link.replace(/[^0-9a-zA-Z:#\-]/g, '')
     if link.substring(0, 5) == "https"
       link = link.replace('https', 'http')
     if link.substring(0, 4) == "http"
