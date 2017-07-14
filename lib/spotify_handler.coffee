@@ -252,13 +252,20 @@ class SpotifyHandler
   # Since the playlist might have loaded before we can attach our callback, the actual playlist-functionality
   # is extracted to _set_playlist_callback which we call either directly or delayed once it has loaded.
   set_playlist: (name) ->
-    if @playlists[name]?
-      playlist = @spotify.createFromLink @playlists[name]
+    playlistLink = false
+    playlistName = name
+
+    for key of @playlists
+      if name.toLowerCase() == key.toLowerCase()
+        playlistName = key
+        playlistLink = @playlists[key]
+    if playlistLink
+      playlist = @spotify.createFromLink playlistLink
       if playlist && playlist.isLoaded
-        @_set_playlist_callback name, playlist
+        @_set_playlist_callback playlistName, playlist
       else if playlist
         @spotify.waitForLoaded [playlist], (playlist) =>
-          @_set_playlist_callback name, playlist
+          @_set_playlist_callback playlistName, playlist
       return true
     return false
 
