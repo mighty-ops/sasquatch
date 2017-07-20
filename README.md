@@ -26,6 +26,11 @@ That's it, your personal Sasquatch instance is now ready to serve requests. Ther
 ## Configuration
 All the important bits are controlled by `config.json` in the project's root path. Below is a code example with comments which *you need to remove* when you copy/pase it, since comments are not allowed in JSON files.
 
+Start up and shutdown can also be configured here. You need to include exactly seven entries - set the start/stop times to -1 if you don't want the respective command to execute. If using the scheduler, don't forget to set up the crontab. The cron is run as UTC time, so set your timezone if you want to.
+
+Example:
+`0 * * * * TZ="Pacific/Auckland" /usr/bin/node /opt/sasquatch/scheduler.js`
+
 ```
 {
   "spotify": {
