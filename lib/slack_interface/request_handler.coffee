@@ -185,7 +185,7 @@ class SlackInterfaceRequestHandler
                   if @spotify.state.track.object.queuer
                     reply_data['text'] = "This fine selection is *<#{@spotify.state.track.object.link}|#{@spotify.state.track.name}>* by *#{@spotify.state.track.artists}* - brought to you by *#{@spotify.state.track.object.queuer}*. The playlist *<#{@spotify.playlists[@spotify.state.playlist.name]}|#{@spotify.state.playlist.name}>* will resume shortly."
                   else
-                    reply_data['text'] = "This banging tune is *<#{@spotify.state.track.object.link}|#{@spotify.state.track.name}>* by *#{@spotify.state.track.artists}*.\nThe playlist is *<#{@spotify.playlists[@spotify.state.playlist.name]}|#{@spotify.state.playlist.name}>*, and we are#{shuffleword} shufflin'."
+                    reply_data['text'] = "This banging tune is *<#{@spotify.state.track.object.link}|#{@spotify.state.track.name}>* by *#{@spotify.state.track.artists}*.\nThe playlist is *<#{@spotify.state.playlist.link}|#{@spotify.state.playlist.name}>*, and we are#{shuffleword} shufflin'."
 
               when 'help'
                 reply_data['text'] = "Noob. Here's how to work it:

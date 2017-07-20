@@ -251,16 +251,35 @@ class SpotifyHandler
   # Changes the current playlist and starts playing.
   # Since the playlist might have loaded before we can attach our callback, the actual playlist-functionality
   # is extracted to _set_playlist_callback which we call either directly or delayed once it has loaded.
-  set_playlist: (name) ->
-    if @playlists[name]?
-      playlist = @spotify.createFromLink @playlists[name]
-      if playlist && playlist.isLoaded
-        @_set_playlist_callback name, playlist
-      else if playlist
-        @spotify.waitForLoaded [playlist], (playlist) =>
-          @_set_playlist_callback name, playlist
+  set_playlist: (nameOrLink) ->
+    playlistLink = false
+    playlistName = nameOrLink
+
+    for key of @playlists
+      if nameOrLink.toLowerCase() == key.toLowerCase()
+        playlistName = key
+        playlistLink = @playlists[key]
+
+    # If playlist exists in playlists object, play the link there
+    if playlistLink
+      @set_playlist_by_link @playlists[playlistName], playlistName
+      return true
+
+    # If nameOrLink is a recognised spotify link then play that
+    sanitizedLink = @_sanitize_link nameOrLink
+    if sanitizedLink.substring(0, 8) == 'spotify:'
+      @set_playlist_by_link sanitizedLink
       return true
     return false
+
+  set_playlist_by_link: (link, name) ->
+    playlist = @spotify.createFromLink link
+    if playlist && playlist.isLoaded
+      @_set_playlist_callback name || playlist.name, playlist
+    else if playlist
+      @spotify.waitForLoaded [playlist], (loadedPlaylist) =>
+        @_set_playlist_callback name || playlist.name, loadedPlaylist
+    return true
 
 
   # The actual handling of the new playlist once it has been loaded.
@@ -268,6 +287,7 @@ class SpotifyHandler
   _set_playlist_callback: (name, playlist) ->
     @shuffletracker = []
     @state.playlist.name = name
+    @state.playlist.link = playlist.link
 
     # Update our internal state
     @update_playlist null, playlist
